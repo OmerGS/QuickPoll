@@ -1,0 +1,14 @@
+{
+  "name": "quickpoll",
+  "version": "1.0.0",
+  "description": "A fast way to create poll.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "OmerGS",
+  "license": "ISC",
+  "dependencies": {
+    "quickpoll": "file:"
+  }
+}
