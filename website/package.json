@@ -1,6 +1,7 @@
 {
   "name": "quickpoll",
   "version": "1.0.0",
+  "type": "module",
   "description": "A fast way to create poll.",
   "main": "index.js",
   "scripts": {

@@ -1,0 +1,21 @@
+{
+    "code": "feur",
+    "count": 3,
+    "questions": [
+        {
+            "question": "Quelle est votre couleur préférée ?",
+            "options": ["Rouge", "Bleu", "Vert", "Jaune"],
+            "numberOfChoice": 1
+        },
+        {
+            "question": "Quel est votre animal préféré ?",
+            "options": ["Chat", "Chien", "Oiseau", "Poisson"],
+            "numberOfChoice": 1
+        },
+        {
+            "question": "Feur",
+            "options": ["OMG", "A", "Mauol", "Blohi"],
+            "numberOfChoice": 2
+        }
+    ]
+}

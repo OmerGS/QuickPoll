@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QuickPoll</title>
+    <link rel="stylesheet" href="../css/index.css">
+</head>
+<body>
+    <!-- Conteneur pour demander un code -->
+    <div id="auth-container" style="display: none;">
+        <h2>Entrez le code pour accéder au sondage</h2>
+        <input type="text" id="code-input" placeholder="Code">
+        <button id="submit-code-btn">Valider</button>
+        <p id="error-message" style="color: red; display: none;">Code incorrect, veuillez réessayer.</p>
+    </div>
+
+    <!-- Conteneur principal du sondage -->
+    <div id="poll-container" style="display: none;">
+        <div id="question-counter"></div> <!-- Affichage du compteur de questions -->
+        <h1 id="question"></h1> <!-- La question -->
+        <form id="poll-form">
+            <div id="options-container"></div> <!-- Options (radio ou checkbox) -->
+            <button type="submit" id="submit-btn">Envoyer</button> <!-- Bouton pour voter -->
+        </form>
+    </div>
+
+    <script>
+        async function loadQuestion() {
+            try {
+                const response = await fetch('/question');
+                const data = await response.json();
+
+                console.log('Données reçues :', data);
+
+                if (data.code && data.code !== "") {
+                    document.getElementById('auth-container').style.display = 'block';
+
+                    const submitCodeBtn = document.getElementById('submit-code-btn');
+                    submitCodeBtn.addEventListener('click', () => {
+                        const enteredCode = document.getElementById('code-input').value;
+                        if (enteredCode === data.code) {
+                            document.getElementById('auth-container').style.display = 'none';
+                            document.getElementById('poll-container').style.display = 'block';
+                            renderQuestion(data, 0); 
+                        } else {
+                            document.getElementById('error-message').style.display = 'block';
+                        }
+                    });
+                } else {
+                    document.getElementById('poll-container').style.display = 'block';
+                    renderQuestion(data, 0); 
+                }
+            } catch (error) {
+                console.error('Erreur lors du chargement des questions :', error);
+            }
+        }
+
+        function renderQuestion(data, currentIndex) {
+            if (data.questions && data.questions.length > 0) {
+                const questionData = data.questions[currentIndex];
+
+                const questionCounter = document.getElementById('question-counter');
+                questionCounter.innerText = `Question ${currentIndex + 1} / ${data.count}`;
+
+                document.getElementById('question').innerText = questionData.question;
+
+                const optionsContainer = document.getElementById('options-container');
+                optionsContainer.innerHTML = '';
+                questionData.options.forEach((option, index) => {
+                    const optionElement = document.createElement('div');
+                    optionElement.classList.add('option');
+
+                    const input = document.createElement('input');
+                    input.type = questionData.numberOfChoice === 1 ? 'radio' : 'checkbox';
+                    input.name = 'poll-option';
+                    input.id = `option-${index}`;
+                    input.value = option;
+
+                    const label = document.createElement('label');
+                    label.htmlFor = `option-${index}`;
+                    label.textContent = option;
+
+                    optionElement.appendChild(input);
+                    optionElement.appendChild(label);
+                    optionsContainer.appendChild(optionElement);
+                });
+
+                const form = document.getElementById('poll-form');
+                form.onsubmit = (event) => {
+                    event.preventDefault();
+
+                    const selectedOptions = Array.from(
+                        document.querySelectorAll('input[name="poll-option"]:checked')
+                    ).map((input) => input.value);
+
+                    if (selectedOptions.length > 0) {
+                        if (currentIndex + 1 < data.questions.length) {
+                            renderQuestion(data, currentIndex + 1); 
+                        } else {
+                            alert('Merci d’avoir répondu à toutes les questions !');
+                            form.reset(); 
+                        }
+                    } else {
+                        alert('Veuillez sélectionner une option avant de voter.');
+                    }
+                };
+            } else {
+                document.getElementById('question').innerText = 'Aucune question disponible.';
+            }
+        }
+
+        loadQuestion();
+    </script>
+</body>
+</html>
